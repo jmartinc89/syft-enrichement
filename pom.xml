@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.stratio.sbom</groupId>
-    <artifactId>GoTransformer</artifactId>
+    <artifactId>SCAAnalyzer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
@@ -39,9 +39,7 @@
                     <execution>
                         <goals>
                             <goal>addSources</goal>
-                            <goal>addTestSources</goal>
                             <goal>compile</goal>
-                            <goal>compileTests</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -60,7 +58,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.stratio.sbom.GoTransformer</mainClass>
+                            <mainClass>com.stratio.sbom.SCAAnalyzer</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

@@ -6,7 +6,8 @@ class GoSdkArtifactBuilder {
     String version
     String type
     String foundBy
-    List<Artifact.Location> locations = []
+    List<SyftArtifact.Location> locations = []
+    String language
     List<String> cpes = []
     String purl
 
@@ -15,8 +16,9 @@ class GoSdkArtifactBuilder {
         this.name = "go"
         this.version = version
         this.type = "stdlib"
+        this.language = "go"
         this.foundBy = "injected-ci-flow"
-        def location = new Artifact.Location()
+        def location = new SyftArtifact.Location()
         location.layerID = evidenceLayer
         location.path = evidencePath
         location.annotations = [evidence: 'primary']
@@ -26,8 +28,8 @@ class GoSdkArtifactBuilder {
         this.purl = "pkg:generic/${this.name}@${this.version}"
     }
 
-    public Artifact build(){
-        def artifact = new Artifact()
+    public SyftArtifact build(){
+        def artifact = new SyftArtifact()
         artifact.id = this.id
         artifact.name = this.name
         artifact.version = this.version
@@ -35,6 +37,7 @@ class GoSdkArtifactBuilder {
         artifact.foundBy = this.foundBy
         artifact.locations = this.locations
         artifact.licenses = []
+        artifact.language = this.language
         artifact.cpes = this.cpes
         artifact.purl = this.purl
         return artifact

@@ -1,6 +1,6 @@
 package com.stratio.sbom.model
 
-class Artifact {
+class SyftArtifact {
     String id
     String name
     String version
@@ -8,6 +8,7 @@ class Artifact {
     String foundBy
     List<Location> locations
     List<String> licenses
+    String language
     List<String> cpes
     String purl
 

@@ -1,17 +1,19 @@
-package com.stratio.sbom
+package com.stratio.sbom.transformer
 
 import com.stratio.sbom.model.GoSdkArtifactBuilder
-import com.stratio.sbom.model.Sbom
+import com.stratio.sbom.model.SyftSbom
 
-class GoTransformer {
-    static void main(String[] args) {
-        // Run Syft to generate SBOM to be tampered
-        def sbom = new Sbom(args[0])
-        new File("${args[0].split("/")[-1]}-orig.json").withWriter('utf8') { writer ->
-            writer.write(sbom.toString())
-        }
+class AddSdkTransformer {
+
+    SyftSbom model
+    
+    public AddSdkTransformer(SyftSbom model) {
+        this.model = model
+    }
+
+    public void transform() {        
         // SBOM is preserved if main artifact was developed in any language but golang
-        def mainArtifact = sbom.getMainBinaryArtifact()
+        def mainArtifact = this.model.getMainBinaryArtifact()
         if (mainArtifact != null && mainArtifact.language == "go") {
             // Extract main attributes of the main artifact
             def compilerVersion =
@@ -23,21 +25,18 @@ class GoTransformer {
             def builderArtifact =
                     new GoSdkArtifactBuilder(compilerVersion, locationPath, locationLayerID).build()
 
-            sbom.addCustomArtifact(builderArtifact)
+            this.model.addCustomArtifact(builderArtifact)
 
             def mainArtifactId = mainArtifact["id"]
-            def sourceRelation = sbom.findRelationshipsByChild(mainArtifactId)
-            def locationRelation = sbom.findRelationshipsByParent(mainArtifactId)
+            def sourceRelation = this.model.findRelationshipsByChild(mainArtifactId)
+            def locationRelation = this.model.findRelationshipsByParent(mainArtifactId)
 
             def builderSourceRelation =
                     { it -> [parent: it.parent , child: builderArtifact.id, type: it.type]}.call(sourceRelation)
             def builderLocationRelation =
                     { it -> [parent: builderArtifact.id , child: it.child, type: it.type]}.call(locationRelation)
-            sbom.addNewArtifactRelationship(builderSourceRelation)
-            sbom.addNewArtifactRelationship(builderLocationRelation)
-        }
-        new File("${args[0].split("/")[-1]}-mod.json").withWriter('utf8') { writer ->
-            writer.write(sbom.toString())
+            this.model.addNewArtifactRelationship(builderSourceRelation)
+            this.model.addNewArtifactRelationship(builderLocationRelation)
         }
     }
 }
